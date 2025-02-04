@@ -5,17 +5,16 @@ from network_security.constants import training_pipeline
 
 class TrainingPipelineConfig:
     def __init__(self, timestamp=datetime.now()):
-        self.timestamp = timestamp.strftime("%m_%d_%Y_%H_%M_%S")
+        timestamp = timestamp.strftime("%m_%d_%Y_%H_%M_%S")
         self.pipeline_name = training_pipeline.PIPELINE_NAME
-        self.artifacts_name = training_pipeline.ARTIFACTS_DIR
-        self.artificat_dir = os.path.join(self.artifacts_name, timestamp)
-        self.timestamp: str = timestamp
+        self.artifact_name = training_pipeline.ARTIFACT_DIR
+        self.artifact_dir = os.path.join(self.artifact_name, timestamp)
 
 
 class DataIngestionConfig:
     def __init__(self, training_pipeline_config: TrainingPipelineConfig):
         self.data_ingestion_dir: str = os.path.join(
-            training_pipeline_config.artificat_dir,
+            training_pipeline_config.artifact_dir,
             training_pipeline.DATA_INGESTION_DIR_NAME,
         )
         self.feature_store_path: str = os.path.join(
