@@ -4,4 +4,5 @@ python-dotenv
 certifi
 pre-commit
 pymongo
+scikit-learn
 -e .

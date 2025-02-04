@@ -2,9 +2,6 @@ from datetime import datetime
 import os
 from network_security.constants import training_pipeline
 
-print(training_pipeline.PIPELINE_NAME)
-print(training_pipeline.ARTIFACTS_DIR)
-
 
 class TrainingPipelineConfig:
     def __init__(self, timestamp=datetime.now()):
