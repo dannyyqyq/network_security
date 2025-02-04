@@ -1,7 +1,7 @@
 pandas
 numpy
 python-dotenv
-pymongo
 certifi
 pre-commit
+pymongo
 -e .

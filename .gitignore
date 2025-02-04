@@ -172,3 +172,7 @@ cython_debug/
 
 # Documentation and notes
 notes/
+
+# csv files
+*csv
+test_mongodb.py
