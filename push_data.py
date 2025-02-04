@@ -7,22 +7,8 @@ from network_security.logging.logger import logging
 from network_security.exception.exception import NetworkSecurityException
 from config.database_config import DatabaseConfig
 
-# Load the environment variables from the .env file
-# load_dotenv()
-
-# MONGO_DB_URI = os.getenv("MONGO_DB_URI")
-# print(MONGO_DB_URI)
-
-# The certifi.where() call is used for SSL certificate verification when making secure connections:
-
 
 class NetWorkDataExtract:
-    def __init__(self) -> None:
-        try:
-            pass
-        except Exception as e:
-            raise NetworkSecurityException(e, sys)
-
     def cv_to_json_converter(self, filepath):
         try:
             data = pd.read_csv(filepath)
@@ -52,14 +38,10 @@ class NetWorkDataExtract:
 
 
 if __name__ == "__main__":
+    # The certifi.where() call is used for SSL certificate verification when making secure connections:
     ca = certifi.where()
 
     database_config = DatabaseConfig("mongodb")
-
-    # Using configurable parameters from the database_config.py file
-    # FILE_PATH = "network_data/phising_data.csv"
-    # database_name = "Danny_Thong"
-    # collection_name = "Network_Data"
 
     network_object = NetWorkDataExtract()
     data_json = network_object.cv_to_json_converter(database_config.FILE_PATH)
