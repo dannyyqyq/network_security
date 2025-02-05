@@ -176,3 +176,4 @@ notes/
 # csv files
 *csv
 test_mongodb.py
+*pdf
