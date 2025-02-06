@@ -104,6 +104,9 @@ class DataIngestion:
                 train_file_path=self.data_ingestion_config.training_file_path,
                 test_file_path=self.data_ingestion_config.data_ingestion_path,
             )
+
+            logging.info(f"Data ingestion artifact : {data_ingestion_artifact}")
+
             return data_ingestion_artifact
         except Exception as e:
             raise NetworkSecurityException(e, sys)

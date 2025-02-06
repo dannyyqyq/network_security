@@ -123,6 +123,8 @@ class DataValidation:
                 drift_report_file_path=self.data_validation_config.drift_report_file_path,
             )
 
+            logging.info(f"Data validation artifact : {data_validation_artifact}")
+
             return data_validation_artifact
         except Exception as e:
             raise NetworkSecurityException(e, sys)
