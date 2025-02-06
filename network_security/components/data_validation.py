@@ -1,15 +1,15 @@
-from network_security.entity.artifact_entity import (
-    DataIngestionArtifact,
-    DataValidationArtifact,
-)
+from network_security.entity.artifact_entity import DataValidationArtifact
+from network_security.entity.artifact_entity import DataIngestionArtifact
 from network_security.entity.config_entity import DataValidationConfig
 from network_security.exception.exception import NetworkSecurityException
 from network_security.constants.training_pipeline import SCHEMA_FILE_PATH
-from network_security.utils.main_utils.utils import read_yaml_file, write_yaml_file
+from network_security.utils.main_utils.utils import read_yaml_file
+from network_security.utils.main_utils.utils import write_yaml_file
 from network_security.logging.logger import logging
 from scipy.stats import ks_2samp
 import pandas as pd
-import os, sys
+import os
+import sys
 
 
 class DataValidation:
@@ -114,7 +114,7 @@ class DataValidation:
                 header=True,
             )
 
-            data_validation_artificat = DataValidationArtifact(
+            data_validation_artifact = DataValidationArtifact(
                 validation_status=True,
                 valid_train_file_path=self.data_validation_config.valid_train_file_path,
                 valid_test_file_path=self.data_validation_config.valid_test_file_path,
@@ -123,6 +123,6 @@ class DataValidation:
                 drift_report_file_path=self.data_validation_config.drift_report_file_path,
             )
 
-            return data_validation_artificat
+            return data_validation_artifact
         except Exception as e:
             raise NetworkSecurityException(e, sys)
