@@ -26,6 +26,9 @@ from sklearn.ensemble import (
     GradientBoostingClassifier,
 )
 import mlflow
+import dagshub
+
+dagshub.init(repo_owner="dannyyqyq", repo_name="network_security", mlflow=True)
 
 
 class ModelTrainer:
@@ -134,10 +137,14 @@ class ModelTrainer:
             os.makedirs(model_dir_path)
 
             Network_Model = NetworkModel(preprocessor, best_model)
+            logging.info(f"Network_Model : {Network_Model}")
+
             save_object(
                 file_path=self.model_trainer_config.trained_model_file_path,
                 obj=Network_Model,
             )
+
+            save_object("final model/model.pkl", best_model)
 
             # Model trainer artifact
             model_trainer_artifact = ModelTrainerArtificat(
