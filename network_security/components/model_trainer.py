@@ -43,7 +43,7 @@ class ModelTrainer:
         except Exception as e:
             raise NetworkSecurityException(e, sys)
 
-    def track_mlflow(self, best_model, classification_metric):
+    def track_mlflow(self, model, classification_metric):
         with mlflow.start_run():
             f1_score = classification_metric.f1_score
             precision_score = classification_metric.precision
@@ -52,7 +52,7 @@ class ModelTrainer:
             mlflow.log_metric("f1_score", f1_score)
             mlflow.log_metric("precision_score", precision_score)
             mlflow.log_metric("recall_score", recall_score)
-            mlflow.sklearn.log_model(best_model, "model")
+            mlflow.sklearn.log_model(model, "model")
 
     def train_model(self, X_train, y_train, X_test, y_test):
         try:
@@ -100,14 +100,11 @@ class ModelTrainer:
                 param=params,
             )
 
-            best_model_name = None
-            best_model_score = -float("inf")  # Start with a very low score
-
-            # Iterate through the model report to find the best model
-            for model_name, score in model_report.items():
-                if score > best_model_score:
-                    best_model_name = model_name
-                    best_model_score = score
+            # Find the best model
+            best_model_name = max(model_report, key=model_report.get)
+            logging.info(
+                f"Best model found on both training and testing dataset based on r2 :{[best_model_name]}"
+            )
 
             # Retrieve the best model
             best_model = models[best_model_name]
