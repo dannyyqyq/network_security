@@ -44,18 +44,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Configure DNS and Docker
-        run: |
-          sudo cp /etc/resolv.conf /etc/resolv.conf.backup
-          sudo tee /etc/resolv.conf > /dev/null << EOT
-          nameserver 8.8.8.8
-          nameserver 8.8.4.4
-          nameserver 1.1.1.1
-          EOT
-          sudo systemctl restart docker
-          # Test ECR connectivity
-          aws ecr describe-repositories --repository-names ${{ secrets.ECR_REPOSITORY_NAME }}
-
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
@@ -74,6 +62,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup Environment
+        run: |
+          # Fix hostname resolution
+          echo "127.0.0.1 $(hostname)" | sudo tee -a /etc/hosts
+          
+          # Install AWS CLI
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+          
+          # Install required packages
+          sudo apt-get update
+          sudo apt-get install -y jq unzip
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -87,14 +89,15 @@ jobs:
 
       - name: Configure DNS and verify ECR connection
         run: |
-          sudo cp /etc/resolv.conf /etc/resolv.conf.backup
+          sudo cp /etc/resolv.conf /etc/resolv.conf.backup || true
           sudo tee /etc/resolv.conf > /dev/null << EOT
           nameserver 8.8.8.8
           nameserver 8.8.4.4
           nameserver 1.1.1.1
           EOT
-          sudo systemctl restart docker
-          # Test ECR connectivity after AWS login
+          sudo systemctl restart docker || true
+          # Verify AWS CLI and ECR access
+          aws --version
           aws ecr describe-repositories --repository-names ${{ secrets.ECR_REPOSITORY_NAME }}
       
       - name: Pull latest images with retry
@@ -107,6 +110,11 @@ jobs:
          
       - name: Run Docker Image to serve users
         run: |
+          # Stop and remove existing container if it exists
+          docker ps -q --filter "name=networksecurity" | grep -q . && docker stop networksecurity || true
+          docker rm -f networksecurity || true
+          
+          # Run new container
           docker run -d -p 8080:8080 --ipc="host" --name=networksecurity \
           -e 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' \
           -e 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' \
