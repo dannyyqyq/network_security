@@ -57,13 +57,15 @@ jobs:
           echo ":::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
   Continuous-deployment:
-    needs: build-and-push-ecr-image-ec
+    needs: build-and-push-ecr-image
     runs-on: self-hosted
+     # Event Listener - Helps to continuously listen if there are any commits into the github repository
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
+       # Used to configure aws credentials for deploying on EC2 instances
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
