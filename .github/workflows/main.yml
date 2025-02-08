@@ -32,6 +32,15 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+        
+      - name: Ensure DNS resolution
+        run: sudo systemctl restart systemd-resolved
+      
+      - name: Check DNS configuration
+        run: cat /etc/resolv.conf
+      
+      - name: Set DNS to Google's public DNS
+        run: echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf > /dev/null
 
       - name: Install Utilities
         run: |
