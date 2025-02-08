@@ -141,7 +141,7 @@ class ModelTrainer:
                 obj=Network_Model,
             )
 
-            save_object("final model/model.pkl", best_model)
+            save_object("final_model/model.pkl", best_model)
 
             # Model trainer artifact
             model_trainer_artifact = ModelTrainerArtifact(

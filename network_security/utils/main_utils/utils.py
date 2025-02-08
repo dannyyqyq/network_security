@@ -113,7 +113,7 @@ def load_object(file_path: str):
             raise Exception(f"File not found at {file_path}")
         with open(file_path, "rb") as file_object:
             print(file_object)
-            pickle.load(file_object)
+            return pickle.load(file_object)
         logging.info("Saved the object successfully")
     except Exception as e:
         raise NetworkSecurityException(e, sys)
