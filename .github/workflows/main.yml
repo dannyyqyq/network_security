@@ -28,7 +28,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-
+        
+      - name: Ensure DNS resolution
+        run: sudo systemctl restart systemd-resolved
+        
       - name: Update and install dependencies
         run: |
           sudo apt-get update
