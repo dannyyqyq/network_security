@@ -27,25 +27,7 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-        
-      - name: DNS Resolution Setup
-        run: |
-          # Backup original resolv.conf
-          sudo cp /etc/resolv.conf /etc/resolv.conf.backup
-          
-          # Configure multiple DNS servers for redundancy
-          sudo tee /etc/resolv.conf > /dev/null << EOT
-          nameserver 8.8.8.8
-          nameserver 8.8.4.4
-          nameserver 1.1.1.1
-          EOT
-          
-          # Restart Docker to pick up DNS changes
-          sudo systemctl restart docker
-          
-          # Verify DNS resolution
-          nslookup ${{secrets.AWS_ECR_LOGIN_URI}}
-      
+
       - name: Install Utilities
         run: |
           sudo apt-get update
@@ -62,6 +44,18 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Configure DNS and Docker
+        run: |
+          sudo cp /etc/resolv.conf /etc/resolv.conf.backup
+          sudo tee /etc/resolv.conf > /dev/null << EOT
+          nameserver 8.8.8.8
+          nameserver 8.8.4.4
+          nameserver 1.1.1.1
+          EOT
+          sudo systemctl restart docker
+          # Test ECR connectivity
+          aws ecr describe-repositories --repository-names ${{ secrets.ECR_REPOSITORY_NAME }}
+
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
@@ -69,9 +63,6 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
           IMAGE_TAG: latest
         run: |
-          # Build a docker container and
-          # push it to ECR so that it can
-          # be deployed to ECS.
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
@@ -82,24 +73,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Configure DNS on self-hosted runner
-        run: |
-          # Backup original resolv.conf
-          sudo cp /etc/resolv.conf /etc/resolv.conf.backup
-          
-          # Configure multiple DNS servers for redundancy
-          sudo tee /etc/resolv.conf > /dev/null << EOT
-          nameserver 8.8.8.8
-          nameserver 8.8.4.4
-          nameserver 1.1.1.1
-          EOT
-          
-          # Restart Docker to pick up DNS changes
-          sudo systemctl restart docker
-          
-          # Verify Docker can reach ECR
-          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{secrets.AWS_ECR_LOGIN_URI}}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -112,11 +85,16 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Verify ECR endpoint
+      - name: Configure DNS and verify ECR connection
         run: |
-          echo "Attempting to resolve ECR endpoint..."
-          host ${{secrets.AWS_ECR_LOGIN_URI}}
-          echo "Testing ECR connection..."
+          sudo cp /etc/resolv.conf /etc/resolv.conf.backup
+          sudo tee /etc/resolv.conf > /dev/null << EOT
+          nameserver 8.8.8.8
+          nameserver 8.8.4.4
+          nameserver 1.1.1.1
+          EOT
+          sudo systemctl restart docker
+          # Test ECR connectivity after AWS login
           aws ecr describe-repositories --repository-names ${{ secrets.ECR_REPOSITORY_NAME }}
       
       - name: Pull latest images with retry
