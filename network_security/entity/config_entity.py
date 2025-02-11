@@ -114,7 +114,3 @@ class ModelTrainerConfig:
             training_pipeline.MODEL_TRAINER_TRAINED_MODEL_DIR,
             training_pipeline.MODEL_TRAINER_TRAINED_MODEL_NAME,
         )
-        self.expected_score: float = training_pipeline.MODEL_TRAINER_EXPECTED_SCORE
-        self.overfitting_underfitting_threshold: float = (
-            training_pipeline.MODEL_TRAINER_OVERFITTING_UNDERFITTING_THRESHOLD
-        )
