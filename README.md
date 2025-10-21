@@ -36,3 +36,22 @@ This project develops a system to detect phishing attempts by analyzing network 
   - **Training Pipeline**: Starts the training pipeline via an API call.
   - **Prediction**: Accepts CSV files for on-the-fly prediction and returns results in HTML.
 - **Model and Data Sync**: Syncs local artifacts and models to S3 for cloud storage.
+
+  
+⚠️ Challenges Faced  
+AWS Environment Setup via IAM:
+Configuring the AWS environment for the network security system proved challenging due to the need to set up Identity and Access Management (IAM) roles and policies.
+Ease of Azure Web App Setup with Container Registry:
+Deploying the network security system on Azure Web App (Azure App Service) with a containerized approach was straightforward. I needed to configure an Azure Container Registry, push the Docker image to the registry, deploy the containerized application to Azure Web App via GitHub Actions, and link the repository to GitHub for CI/CD actions.
+Managing Secrets in GitHub Self-Hosted Actions:
+Integrating secret manager keys and passwords into GitHub self-hosted actions presented difficulties. Ensuring secure storage and retrieval of sensitive credentials (e.g., API keys, database passwords) required configuring GitHub Secrets and Actions workflows correctly.
+
+  
+🔮 Next Steps / Potential Improvements  
+📈 Model Enhancement:
+Explore Recurrent Neural Networks (RNNs) or Transformers for analyzing the sequential nature of network traffic data
+Implement model versioning and automated retraining with new data patterns.
+⚡ Real-time Data Processing:
+Integrate streaming data solutions like Kafka/Redpanda for continuous data analysis.
+🧪 Automated Testing:
+Expand CI/CD to include more comprehensive testing strategies.
